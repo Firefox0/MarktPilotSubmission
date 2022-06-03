@@ -23,29 +23,28 @@ def search(companyName, productName):
     params = {"br": brCode}
     baseUrl = f"https://www.wollplatz.de/wolle/?"
     finalUrl = baseUrl + urllib.parse.urlencode(params) + parseSearchQuery(productName)
-    print(finalUrl)
     soup = urlToSoup(finalUrl)
     products = soup.find_all("a", {"class": "productlist-imgholder"})
     goodQuery = productName.replace(" ", "-")
     # List comprehension for slightly better performance
     results = [product["href"] for product in products if goodQuery in product["href"]]
-    print(results)
     return results
 
 def getProductInfo(url):
     soup = urlToSoup(url)
-    price = soup.find("span", {"class": "product-price-amount"})
-    print(price.text)
+    price = soup.find("span", {"class": "product-price-amount"}).text
     # Delivery element is dependent on its state.
     # It could either include "green", "orange" or "red".
     # Instead just access the element from the parent to 
     # prevent the need for an iteration.
     deliveryParent = soup.find("div", {"id": "ContentPlaceHolder1_upStockInfoDescription"})
-    delivery = deliveryParent.findChild("span")
-    print(delivery.text)
+    delivery = deliveryParent.findChild("span").text
     needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
-    print(needleSize)
+    combination = soup.find("td", string="Zusammenstellung").nextSibling.text
+    return {"price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
 
 url = search("dmc", "natura xl")[0]
-getProductInfo(url)
+print(url)
+info = getProductInfo(url)
+print(info)
 input("")
