@@ -1,4 +1,5 @@
 from email import parser
+from itertools import product
 from urllib import response
 import requests
 from bs4 import BeautifulSoup
@@ -14,6 +15,8 @@ company = {
 }
 
 def urlToSoup(url):
+    if not url:
+        return False
     response = requests.get(url)
     return BeautifulSoup(response.text, "html.parser")
 
@@ -26,6 +29,8 @@ def search(companyName, productName):
     baseUrl = f"https://www.wollplatz.de/wolle/?"
     finalUrl = baseUrl + urllib.parse.urlencode(params) + parseSearchQuery(productName)
     soup = urlToSoup(finalUrl)
+    if not soup:
+        return False
     products = soup.find_all("a", {"class": "productlist-imgholder"})
     print(products)
     goodQuery = productName.replace(" ", "-")
@@ -34,7 +39,11 @@ def search(companyName, productName):
     return results
 
 def getProductInfo(url):
+    if not url:
+        return False
     soup = urlToSoup(url)
+    if not soup:
+        return False
     name = soup.find("h1", {"id": "pageheadertitle"}).text
     price = soup.find("span", {"class": "product-price-amount"}).text
     # Delivery element is dependent on its state.
@@ -48,6 +57,10 @@ def getProductInfo(url):
     return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
 
 def saveProduct(productDict):
+    # Check validity of the argument.
+    keys = productDict.keys()
+    if len(keys) != 5 or len([e for e in keys if e not in ["name", "price", "delivery", "needleSize", "combination"]]):
+        return False
     fileName = "products.json"
     if not os.path.exists(fileName):
         with open(fileName, "w") as fp:
@@ -64,6 +77,8 @@ def saveProduct(productDict):
     with open(fileName, "w") as fp:
         fp.write(json.dumps(parsedJson))
 
+    return True
+    
 if __name__ == "__main__":
     url = search("drops", "baby")[0]
     print(url)
