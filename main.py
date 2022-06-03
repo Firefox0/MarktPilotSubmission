@@ -43,14 +43,7 @@ def getProductInfo(url):
     deliveryParent = soup.find("div", {"id": "ContentPlaceHolder1_upStockInfoDescription"})
     delivery = deliveryParent.findChild("span")
     print(delivery.text)
-    needleSizeTableParent = soup.find("div", {"id": "pdetailTableSpecs"})
-    needleSizeTable = needleSizeTableParent.find_all("tr")
-    needleSize = ""
-    for tr in needleSizeTable:
-        td = tr.find("td")
-        if td.text == "Nadelstärke":
-            needleSize = td.nextSibling.text
-            break
+    needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
     print(needleSize)
 
 url = search("dmc", "natura xl")[0]
