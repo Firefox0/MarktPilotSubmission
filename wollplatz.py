@@ -14,9 +14,11 @@ company = {
 }
 
 def parseSearchQuery(query):
+    """ Converts the query to the url search parameter. """
     return f"#sqr%3A(q[{query}])"
 
 def search(companyName, productName):
+    """ Looks for the productName from companyName and returns matches. """
     brCode = company[companyName]
     params = {"br": brCode}
     baseUrl = f"https://www.wollplatz.de/wolle/?"
@@ -31,6 +33,7 @@ def search(companyName, productName):
     return results
 
 def getProductInfo(url):
+    """ Extracts certain info about a product from url. """
     if not url:
         return False
     soup = common.urlToSoup(url)
@@ -49,6 +52,7 @@ def getProductInfo(url):
     return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
 
 def saveProduct(productDict):
+    """ Saves a product in a json file. """
     # Check validity of the argument.
     keys = productDict.keys()
     if len(keys) != 5 or len([e for e in keys if e not in ["name", "price", "delivery", "needleSize", "combination"]]):
