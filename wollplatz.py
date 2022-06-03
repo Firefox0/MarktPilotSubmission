@@ -1,8 +1,6 @@
 from itertools import product
 from urllib import response
 import urllib.parse
-import json
-import os
 
 import common
 
@@ -50,27 +48,3 @@ def getProductInfo(url):
     needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
     combination = soup.find("td", string="Zusammenstellung").nextSibling.text
     return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
-
-def saveProduct(productDict):
-    """ Saves a product in a json file. """
-    # Check validity of the argument.
-    keys = productDict.keys()
-    if len(keys) != 5 or len([e for e in keys if e not in ["name", "price", "delivery", "needleSize", "combination"]]):
-        return False
-    fileName = "products.json"
-    if not os.path.exists(fileName):
-        with open(fileName, "w") as fp:
-            fp.write(json.dumps({"products": [productDict]}))
-        return
-
-    text = ""
-    with open(fileName, "r") as fp:
-        text = "".join(fp.readlines())
-
-    parsedJson = json.loads(text)
-    parsedJson["products"].append(productDict)
-
-    with open(fileName, "w") as fp:
-        fp.write(json.dumps(parsedJson))
-
-    return True
