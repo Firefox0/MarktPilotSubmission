@@ -3,6 +3,8 @@ from urllib import response
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
+import json
+import os
 
 # br code for each company.
 company = {
@@ -25,6 +27,7 @@ def search(companyName, productName):
     finalUrl = baseUrl + urllib.parse.urlencode(params) + parseSearchQuery(productName)
     soup = urlToSoup(finalUrl)
     products = soup.find_all("a", {"class": "productlist-imgholder"})
+    print(products)
     goodQuery = productName.replace(" ", "-")
     # List comprehension for slightly better performance
     results = [product["href"] for product in products if goodQuery in product["href"]]
@@ -32,6 +35,7 @@ def search(companyName, productName):
 
 def getProductInfo(url):
     soup = urlToSoup(url)
+    name = soup.find("h1", {"id": "pageheadertitle"}).text
     price = soup.find("span", {"class": "product-price-amount"}).text
     # Delivery element is dependent on its state.
     # It could either include "green", "orange" or "red".
@@ -41,10 +45,29 @@ def getProductInfo(url):
     delivery = deliveryParent.findChild("span").text
     needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
     combination = soup.find("td", string="Zusammenstellung").nextSibling.text
-    return {"price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
+    return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
 
-url = search("dmc", "natura xl")[0]
-print(url)
-info = getProductInfo(url)
-print(info)
-input("")
+def saveProduct(productDict):
+    fileName = "products.json"
+    if not os.path.exists(fileName):
+        with open(fileName, "w") as fp:
+            fp.write(json.dumps({"products": [productDict]}))
+        return
+
+    text = ""
+    with open(fileName, "r") as fp:
+        text = "".join(fp.readlines())
+
+    parsedJson = json.loads(text)
+    parsedJson["products"].append(productDict)
+
+    with open(fileName, "w") as fp:
+        fp.write(json.dumps(parsedJson))
+
+if __name__ == "__main__":
+    url = search("drops", "baby")[0]
+    print(url)
+    info = getProductInfo(url)
+    print(info)
+    saveProduct(info)
+    input("")
