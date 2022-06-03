@@ -1,3 +1,4 @@
+from common import saveProduct
 import wollplatz
 import db
 
@@ -11,6 +12,7 @@ if __name__ == "__main__":
         if len(url) == 0:
             continue
         productInfo = wollplatz.getProductInfo(url[0])
+        saveProduct(productInfo)
         print(productInfo)
 
         db.insert(productInfo)
