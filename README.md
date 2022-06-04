@@ -23,7 +23,7 @@ Keys enthält.
 ### 3 1/2 Stunden
 Git tag: ActualEnd
 Support für Wollzauber wurde hinzugefügt. Zum Hinzufügen einer neuen Webseite muss lediglich die entsprechende Funktion in die list des Skripts main.py
-hinzugefügt werden. Außerdem muss man den Code des Skripts beliebigen Seite nehmen und unter Anderem die Argumente der .find Methode ändern. Das Interface bleibt
+hinzugefügt werden. Außerdem muss man den Code des Skripts einer beliebigen Seite nehmen und unter anderem die Argumente der .find Methode ändern. Das Interface bleibt
 immer erhalten, man muss lediglich die Implementierung anpassen.
 
 Außerdem wird auch die URL des Produkts nun gespeichert.
