@@ -37,7 +37,7 @@ def getProductInfo(url):
     if not soup:
         return None
     name = soup.find("h1", {"class": "product--title"}).text
-    price = soup.find("span", {"class": "price--content"}).text.strip().replace("€", "").replace("*", "")
+    price = soup.find("span", {"class": "price--content"}).text.strip().split("€")[0][:-1]
     delivery = soup.find("i", {"class": "delivery--status-icon"}).nextSibling
     table = soup.find("div", {"class": "product--description"})
     try:
