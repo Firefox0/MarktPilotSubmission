@@ -7,7 +7,8 @@ import os
 def urlToSoup(url):
     """ Returns a BeautifulSoup object for the url. """
     if not url:
-        return False
+        return None
+        
     response = requests.get(url)
     return BeautifulSoup(response.text, "html.parser")
 
