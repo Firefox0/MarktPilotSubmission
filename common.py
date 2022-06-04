@@ -8,7 +8,7 @@ def urlToSoup(url):
     """ Returns a BeautifulSoup object for the url. """
     if not url:
         return None
-        
+
     response = requests.get(url)
     return BeautifulSoup(response.text, "html.parser")
 
@@ -28,17 +28,17 @@ def saveProduct(productDict):
     fileName = "products.json"
     if not os.path.exists(fileName):
         with open(fileName, "w") as fp:
-            fp.write(json.dumps({"products": [productDict]}))
-        return
+            fp.write(json.dumps({"products": [productDict]}, indent=4))
+        return True
+        
     text = ""
-    with open(fileName, "r") as fp:
+    with open(fileName, "r+") as fp:
         text = "".join(fp.readlines())
-
-    parsedJson = json.loads(text)
-    parsedJson["products"].append(productDict)
-
-    with open(fileName, "w") as fp:
-        fp.write(json.dumps(parsedJson))
+        parsedJson = json.loads(text)
+        parsedJson["products"].append(productDict)
+        fp.truncate(0)
+        fp.seek(0)
+        fp.write(json.dumps(parsedJson, indent=4))
 
     return True
 
