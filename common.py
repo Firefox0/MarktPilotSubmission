@@ -33,3 +33,8 @@ def saveProduct(productDict):
         fp.write(json.dumps(parsedJson))
 
     return True
+
+def saveProducts(productsDict):
+    """ Saves multiple products in a json file. """    
+    for i in range(len(productsDict)):
+        saveProduct(productsDict[i])
