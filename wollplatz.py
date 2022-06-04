@@ -13,17 +13,23 @@ company = {
 
 def parseSearchQuery(query):
     """ Converts the query to the url search parameter. """
-    return f"#sqr%3A(q[{query}])"
+    return f"#sqr:(q[{query}])"
 
 def search(companyName, productName):
     """ Looks for the productName from companyName and returns matches. """
-    brCode = company[companyName]
+    companyNameLowered = companyName.lower()
+    brCode = ""
+    try:
+        brCode = company[companyNameLowered]
+    except KeyError:
+        return None
     params = {"br": brCode}
     baseUrl = f"https://www.wollplatz.de/wolle/?"
-    finalUrl = baseUrl + urllib.parse.urlencode(params) + parseSearchQuery(productName)
+    productNameLowered = productName.lower()
+    finalUrl = baseUrl + urllib.parse.urlencode(params) + parseSearchQuery(productNameLowered)
     soup = common.urlToSoup(finalUrl)
     if not soup:
-        return False
+        return None
     products = soup.find_all("a", {"class": "productlist-imgholder"})
     goodQuery = productName.replace(" ", "-")
     # List comprehension for slightly better performance
@@ -33,10 +39,10 @@ def search(companyName, productName):
 def getProductInfo(url):
     """ Extracts certain info about a product from url. """
     if not url:
-        return False
+        return None
     soup = common.urlToSoup(url)
     if not soup:
-        return False
+        return None
     name = soup.find("h1", {"id": "pageheadertitle"}).text
     price = soup.find("span", {"class": "product-price-amount"}).text
     # Delivery element is dependent on its state.
@@ -45,6 +51,22 @@ def getProductInfo(url):
     # prevent the need for an iteration.
     deliveryParent = soup.find("div", {"id": "ContentPlaceHolder1_upStockInfoDescription"})
     delivery = deliveryParent.findChild("span").text
-    needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
-    combination = soup.find("td", string="Zusammenstellung").nextSibling.text
-    return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination}
+    try:
+        needleSize = soup.find("td", string="Nadelstärke").nextSibling.text
+    except:
+        needleSize = "-"
+    try:
+        combination = soup.find("td", string="Zusammenstellung").nextSibling.text
+    except:
+        combination = ""
+    return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination, "url": url}
+
+def searchProduct(companyName, productName, limit=0):
+    """ Searches product and parses up to 'limit' product info. """
+    url = search(companyName, productName)
+    if not url or len(url) == 0:
+        return None
+    if limit == 0:
+        limit = len(url)
+    productInfo = [getProductInfo(url[i]) for i in range(limit)]
+    return productInfo
