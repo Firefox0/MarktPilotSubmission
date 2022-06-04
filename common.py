@@ -1,3 +1,4 @@
+import grequests
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -9,6 +10,13 @@ def urlToSoup(url):
         return False
     response = requests.get(url)
     return BeautifulSoup(response.text, "html.parser")
+
+def urlsToSoups(urls):
+    if not urls or len(urls) == 0:
+        return None
+    
+    responses = asyncRequests(urls)
+    return [BeautifulSoup(response.text, "html.parser") for response in responses]
 
 def saveProduct(productDict):
     """ Saves a product in a json file. """
@@ -37,3 +45,18 @@ def saveProducts(productsDict):
     """ Saves multiple products in a json file. """    
     for i in range(len(productsDict)):
         saveProduct(productsDict[i])
+
+def asyncRequests(urls):
+    rs = (grequests.get(u) for u in urls)
+    return grequests.map(rs)
+
+def searchProduct(companyName, productName, search, getProductInfo, limit=0):
+    """ Searches product and parses up to 'limit' product info. """
+    urls = search(companyName, productName)
+    if not urls or len(urls) == 0:
+        return None
+    soups = urlsToSoups(urls)
+    if limit == 0:
+        limit = len(soups)
+    productInfo = [getProductInfo(urls[i], soups[i]) for i in range(limit)]
+    return productInfo

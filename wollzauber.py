@@ -1,8 +1,6 @@
-from itertools import product
-from urllib import response
-import urllib.parse
 import re
 import common
+from bs4 import BeautifulSoup
 
 # s code for each company.
 company = {
@@ -29,12 +27,9 @@ def search(companyName, productName):
     results = [product["href"] for product in products if productNameLowered in product.text.lower()]
     return results
 
-def getProductInfo(url):
+def getProductInfo(url, soup):
     """ Extracts certain info about a product from url. """
-    if not url:
-        return None
-    soup = common.urlToSoup(url)
-    if not soup:
+    if not url or not soup:
         return None
     name = soup.find("h1", {"class": "product--title"}).text
     price = soup.find("span", {"class": "price--content"}).text.strip().split("€")[0][:-1]
@@ -49,13 +44,3 @@ def getProductInfo(url):
     except:
         combination = "-"
     return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination, "url": url}
-
-def searchProduct(companyName, productName, limit=0):
-    """ Searches product and parses up to 'limit' product info. """
-    url = search(companyName, productName)
-    if not url or len(url) == 0:
-        return None
-    if limit == 0:
-        limit = len(url)
-    productInfo = [getProductInfo(url[i]) for i in range(limit)]
-    return productInfo
