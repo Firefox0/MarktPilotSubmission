@@ -1,6 +1,5 @@
 import re
 import common
-from bs4 import BeautifulSoup
 
 # s code for each company.
 company = {

@@ -1,6 +1,5 @@
 import urllib.parse
 import common
-from bs4 import BeautifulSoup
 
 # br code for each company.
 company = {
@@ -55,14 +54,3 @@ def getProductInfo(url, soup):
     except:
         combination = ""
     return {"name": name, "price": price, "delivery": delivery, "needleSize": needleSize, "combination": combination, "url": url}
-
-def searchProduct(companyName, productName, limit=0):
-    """ Searches product and parses up to 'limit' product info. """
-    urls = search(companyName, productName)
-    if not urls or len(urls) == 0:
-        return None
-    soups = common.urlsToSoups(urls)
-    if limit == 0:
-        limit = len(soups)
-    productInfo = [getProductInfo(urls[i], soups[i]) for i in range(limit)]
-    return productInfo
