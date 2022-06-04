@@ -1,19 +1,20 @@
 import unittest
-import wollplatz
 import common
 
 class Test(unittest.TestCase):
-    def testParseSearchQuery(self):
-        self.assertEqual(wollplatz.parseSearchQuery("test"), "#sqr%3A(q[test])")
-
-    def testSearch(self):
-        url = wollplatz.search("dmc", "natura xl")[0]
-        self.assertDictEqual(wollplatz.getProductInfo(url), {'name': 'DMC Natura XL 02 Black', 'price': '8,46', 'delivery': 'Lieferbar', 'needleSize': '8 mm', 'combination': '100% Baumwolle'})
-
     def testUrlToSoup(self):
+        self.assertTrue(common.urlToSoup("https://www.markt-pilot.de/en/home"))
         self.assertFalse(common.urlToSoup(""))
-        self.assertTrue(common.urlToSoup("https://www.markt-pilot.de/en/career"))
 
+    def testUrlsToSoups(self):
+        self.assertTrue(len(common.urlsToSoups(["https://www.markt-pilot.de/en/case-studies", "https://www.markt-pilot.de/en/press"])) == 2)
+        self.assertFalse(common.urlsToSoups([]))
+    
+    def testSaveProduct(self):
+        self.assertTrue(common.saveProduct({"name": "", "price": "", "delivery": "", "needleSize": "",
+                     "combination": "", "url": ""}))
+        self.assertFalse(common.saveProduct({"name": "", "price": "", "delivery": "", "needleSize": "",
+                     "combination": ""}))
 
 if __name__ == "__main__":
     unittest.main()
