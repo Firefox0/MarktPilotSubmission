@@ -14,8 +14,7 @@ if __name__ == "__main__":
             productInfo = func(companyName, productName)
             if not productInfo:
                 continue
-            print(productInfo)
             common.saveProducts(productInfo)
-        db.insert(productInfo)
+            db.insertProducts(productInfo)
 
     db.selectAll()
