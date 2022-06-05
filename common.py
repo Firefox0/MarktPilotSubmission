@@ -50,14 +50,3 @@ def saveProducts(productsDict):
 def asyncRequests(urls):
     rs = (grequests.get(u) for u in urls)
     return grequests.map(rs)
-
-def searchProduct(companyName, productName, search, getProductInfo, limit=0):
-    """ Searches product and parses up to 'limit' product info. """
-    urls = search(companyName, productName)
-    if not urls or len(urls) == 0:
-        return None
-    soups = urlsToSoups(urls)
-    if limit == 0:
-        limit = len(soups)
-    productInfo = [getProductInfo(urls[i], soups[i]) for i in range(limit)]
-    return productInfo
