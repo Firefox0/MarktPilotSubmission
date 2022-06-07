@@ -8,7 +8,11 @@ class Db:
     def connect(self):
         if not self.fileName:
             return False
-        self.con = sqlite3.connect(self.fileName)
+        try:
+            self.con = sqlite3.connect(self.fileName)
+        except sqlite3.Error as e:
+            print(e)
+            return False
         self.cur = self.con.cursor()
         return True
 
@@ -27,3 +31,14 @@ class Db:
     def selectAll(self):
         for row in self.cur.execute("SELECT * FROM products"):
             print(row)
+
+    def update(self, name, newPrice, newDelivery, newNeedleSize, newCombination, newUrl):
+        self.cur.execute(f"UPDATE products "  +
+                         f"SET price = '{newPrice}', delivery = '{newDelivery}', " +
+                         f"needleSize = '{newNeedleSize}', combination = '{newCombination}', url = '{newUrl}' " +
+                         f"WHERE name = '{name}'")
+        self.con.commit()
+
+    def delete(self, name):
+        self.cur.execute(f"DELETE FROM products WHERE name = '{name}'")
+        self.con.commit()
