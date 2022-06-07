@@ -29,8 +29,7 @@ class Db:
             self.insert(productsDict[i])
 
     def selectAll(self):
-        for row in self.cur.execute("SELECT * FROM products"):
-            print(row)
+        return self.cur.execute("SELECT * FROM products").fetchall()
 
     def update(self, name, newPrice, newDelivery, newNeedleSize, newCombination, newUrl):
         self.cur.execute(f"UPDATE products "  +
@@ -42,3 +41,6 @@ class Db:
     def delete(self, name):
         self.cur.execute(f"DELETE FROM products WHERE name = '{name}'")
         self.con.commit()
+
+    def close(self):
+        self.cur.close()
